@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #071448;
+}
+
+/*
+ * Brand tokens extracted from the pastor4life mobile app (src/screens/**),
+ * see WEBSITE_PROJECT_CHECKLIST.md Section 2.1 for the frequency analysis
+ * these are based on. #071448 is the dominant in-app color (navy), #cce70b
+ * is the primary accent (lime). Do not add colors here that aren't traced
+ * back to that section.
+ */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-montserrat);
+  --font-scripture: var(--font-georgia-italic);
+  --font-digital: var(--font-digital7);
+
+  --color-brand-navy: #071448;
+  --color-brand-lime: #cce70b;
+  --color-brand-peach: #fdb075;
+  --color-brand-gold: #c8a400;
+  --color-brand-success: #02b875;
+  --color-brand-error: #d32f2f;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
