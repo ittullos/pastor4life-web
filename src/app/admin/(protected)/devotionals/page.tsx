@@ -16,7 +16,7 @@ type Devotional = {
 };
 
 export default function DevotionalsPage() {
-  const { items, error: loadError, reload: load } =
+  const { items, error: loadError, reload: load, version } =
     useAdminList<Devotional>("/admin/devotionals");
   const [editing, setEditing] = useState<Devotional | "new" | null>(null);
   const [deleting, setDeleting] = useState<Devotional | null>(null);
@@ -81,6 +81,7 @@ export default function DevotionalsPage() {
       <div className="mt-6">
         {items && (
           <ReorderableList
+            key={version}
             items={items}
             emptyMessage="No devotionals yet."
             onSaveOrder={handleSaveOrder}

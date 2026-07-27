@@ -23,7 +23,7 @@ const FIELDS: FieldSpec[] = [
 ];
 
 export default function PrayerItemsPage() {
-  const { items, error: loadError, reload: load } =
+  const { items, error: loadError, reload: load, version } =
     useAdminList<PrayerItem>("/admin/prayer-items");
   const [editing, setEditing] = useState<PrayerItem | "new" | null>(null);
   const [deleting, setDeleting] = useState<PrayerItem | null>(null);
@@ -82,6 +82,7 @@ export default function PrayerItemsPage() {
       <div className="mt-6">
         {items && (
           <ReorderableList
+            key={version}
             items={items}
             emptyMessage="No prayer items yet."
             onSaveOrder={handleSaveOrder}

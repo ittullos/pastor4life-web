@@ -33,6 +33,7 @@ export async function adminFetch<T = unknown>(
   let res: Response;
   try {
     res = await fetch(`${BASE_URL}${path}`, {
+      cache: "no-store",
       ...options,
       headers: { ...headers, ...options.headers },
     });

@@ -37,28 +37,15 @@ export default function ReorderableList<T extends ReorderableItem>({
   onDelete?: (item: T) => void;
   emptyMessage?: string;
 }) {
+  // Initialized once from `items` and never resynced from props after that
+  // — the parent is expected to pass a `key` (e.g. a version counter that
+  // bumps on every successful fetch) that changes whenever fresh data
+  // arrives, which remounts this component and re-runs this initializer
+  // instead of relying on prop-diffing logic here to notice new data.
   const [order, setOrder] = useState<T[]>(items);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { setDirty } = useUnsavedChanges();
-
-  // Only resync from the server-supplied `items` when the actual SET of ids
-  // changed (a create/delete happened elsewhere on the page) — not just
-  // because the array reference changed on re-render, which would wipe out
-  // an in-progress drag. Computed during render (React's documented pattern
-  // for "adjusting state when a prop changes") rather than in an effect,
-  // which would cascade an extra render for no benefit here.
-  const idSetKey = (list: T[]) =>
-    list
-      .map((i) => i.id)
-      .sort((a, b) => a - b)
-      .join(",");
-  const [syncedKey, setSyncedKey] = useState(() => idSetKey(items));
-  const currentKey = idSetKey(items);
-  if (currentKey !== syncedKey) {
-    setSyncedKey(currentKey);
-    setOrder(items);
-  }
 
   const isDirty = order.some((item, index) => item.id !== items[index]?.id);
 

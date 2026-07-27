@@ -37,7 +37,7 @@ export default function VersesPage() {
   const path = versionFilter
     ? `/admin/verses?version=${encodeURIComponent(versionFilter)}`
     : "/admin/verses";
-  const { items, error: loadError, reload: load } = useAdminList<Verse>(path);
+  const { items, error: loadError, reload: load, version } = useAdminList<Verse>(path);
   const [editing, setEditing] = useState<Verse | "new" | null>(null);
   const [deleting, setDeleting] = useState<Verse | null>(null);
 
@@ -111,6 +111,7 @@ export default function VersesPage() {
         ) : (
           items && (
             <ReorderableList
+              key={version}
               items={items}
               emptyMessage={`No verses for ${versionFilter} yet.`}
               onSaveOrder={handleSaveOrder}
@@ -118,12 +119,7 @@ export default function VersesPage() {
               onDelete={setDeleting}
               renderItem={(item) => (
                 <div>
-                  <p className="text-brand-navy">
-                    {item.notation}{" "}
-                    <span className="text-sm text-brand-navy/50">
-                      (#{item.position} in rotation)
-                    </span>
-                  </p>
+                  <p className="text-brand-navy">{item.notation}</p>
                   <p className="truncate text-sm text-brand-navy/60">
                     {item.scripture}
                   </p>
