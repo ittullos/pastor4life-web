@@ -9,15 +9,17 @@ import ReorderableList from "@/components/admin/ReorderableList";
 
 type Verse = {
   id: number;
-  day: number;
   notation: string;
   scripture: string;
   version: string;
   position: number;
 };
 
+// No day field — position IS the day now (see WEBSITE_PROJECT_CHECKLIST.md /
+// pray4tn's Verse model: dragging a verse to a new spot changes which day it
+// shows on, rather than day and position being two values that could drift
+// apart).
 const FIELDS: FieldSpec[] = [
-  { name: "day", label: "Day of Year (1-366)", type: "number", required: true },
   { name: "notation", label: "Notation (e.g. John 3:16)", required: true },
   { name: "scripture", label: "Scripture Text", type: "textarea", required: true },
   { name: "version", label: "Version (e.g. CSB, NIV)", required: true },
@@ -95,7 +97,7 @@ export default function VersesPage() {
       </div>
       <p className="mt-1 text-sm text-brand-navy/60">
         {versionFilter
-          ? `Drag to reorder within ${versionFilter}, then save. New verses are added to the end. Order is independent per version.`
+          ? `Position in this list is which day of the rotation a verse shows on — dragging a verse to a new spot changes when it's shown, not just where it appears here. New verses are added to the end. Order is independent per version.`
           : "Enter a version above to view and reorder its verses — order is scoped per translation."}
       </p>
 
@@ -119,7 +121,7 @@ export default function VersesPage() {
                   <p className="text-brand-navy">
                     {item.notation}{" "}
                     <span className="text-sm text-brand-navy/50">
-                      (day {item.day})
+                      (#{item.position} in rotation)
                     </span>
                   </p>
                   <p className="truncate text-sm text-brand-navy/60">

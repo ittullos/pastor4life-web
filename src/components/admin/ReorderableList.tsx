@@ -153,7 +153,7 @@ export default function ReorderableList<T extends ReorderableItem>({
             <ul className="overflow-hidden rounded-xl border border-black/10 bg-white">
               {order.map((item) => (
                 <SortableRow key={item.id} id={item.id}>
-                  <div className="flex flex-1 items-center justify-between gap-4">
+                  <div className="flex min-w-0 flex-1 items-center justify-between gap-4">
                     <div className="min-w-0 flex-1">{renderItem(item)}</div>
                     <div className="flex shrink-0 gap-3">
                       {onEdit && (
