@@ -118,7 +118,7 @@ export default function Privacy() {
         </li>
         <li>
           Contact us with privacy-related questions at
-          support@brainstorm.designs.com
+          brainstorm.designs.co@gmail.com
         </li>
       </ul>
 
@@ -144,7 +144,7 @@ export default function Privacy() {
         please contact us at:
       </p>
       <p>
-        Email: support@brainstorm.designs.com
+        Email: brainstorm.designs.co@gmail.com
         <br />
         Website: www.pastor4life.com
       </p>

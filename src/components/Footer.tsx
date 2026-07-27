@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="mt-auto border-t border-black/10 bg-white px-4 py-8 text-brand-navy sm:px-6">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 text-center md:flex-row md:items-center md:justify-between md:text-left">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 text-center">
         {/* TBMB affiliation — Apple Guideline 8.2 requires this be unambiguous */}
         <a
           href="https://tnbaptist.org/pastor4life/"
@@ -23,8 +23,8 @@ export default function Footer() {
 
         <p className="text-xs text-brand-navy/70">
           A ministry tool of the Tennessee Baptist Mission Board.
-          <br className="md:hidden" /> &copy; {new Date().getFullYear()}{" "}
-          Tennessee Baptist Mission Board.
+          <br /> &copy; {new Date().getFullYear()} Tennessee Baptist Mission
+          Board.
         </p>
 
         <nav className="flex gap-4 text-xs font-medium">
@@ -33,6 +33,9 @@ export default function Footer() {
           </Link>
           <Link href="/privacy" className="hover:underline">
             Privacy Policy
+          </Link>
+          <Link href="/admin/login" className="hover:underline">
+            Staff Login
           </Link>
         </nav>
       </div>

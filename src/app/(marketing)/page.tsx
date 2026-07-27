@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "Pastor4Life",
@@ -33,12 +34,31 @@ export default function Home() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-brand-navy px-6 py-20 text-center text-white sm:py-28">
-        <h1 className="text-4xl font-bold sm:text-5xl">Pastor4Life</h1>
-        <p className="mx-auto mt-4 max-w-xl text-lg text-white/90">
-          A simple, friendly app designed just for pastors like you who want
-          to stay healthy in body, mind, and spirit.
-        </p>
+      <section className="relative overflow-hidden bg-brand-navy px-6 py-20 text-center text-white sm:py-28">
+        <Image
+          src="/images/bible.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="relative">
+          <Image
+            src="/images/p4l_logo.png"
+            alt="Pastor4Life"
+            width={1808}
+            height={1430}
+            priority
+            className="mx-auto h-auto w-72 drop-shadow-[0_4px_8px_rgba(0,0,0,0.6)] sm:w-96"
+          />
+          <p
+            className="mx-auto mt-6 max-w-xl text-lg font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.7)] sm:text-xl [-webkit-text-stroke:0.6px_black] [paint-order:stroke_fill]"
+          >
+            A simple, friendly app designed just for pastors like you who want
+            to stay healthy in body, mind, and spirit.
+          </p>
+        </div>
       </section>
 
       {/* Wellness for God's Shepherds */}

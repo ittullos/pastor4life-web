@@ -110,7 +110,7 @@ export default function Terms() {
       <h2>10. Contact Us</h2>
       <p>If you have any questions about these Terms, please contact us:</p>
       <p>
-        Email: support@brainstorm.designs.com
+        Email: brainstorm.designs.co@gmail.com
         <br />
         Website: www.pastor4life.com
       </p>

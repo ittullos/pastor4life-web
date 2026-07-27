@@ -23,12 +23,12 @@ export default function Nav() {
           onClick={() => setOpen(false)}
         >
           <Image
-            src="/images/p4l_logo.png"
+            src="/images/p4l-icon.png"
             alt="Pastor4Life"
-            width={160}
-            height={45}
+            width={44}
+            height={44}
             priority
-            className="h-10 w-auto"
+            className="h-11 w-11 rounded-[22%]"
           />
         </Link>
 
