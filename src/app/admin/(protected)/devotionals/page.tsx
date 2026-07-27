@@ -4,7 +4,7 @@ import { useState } from "react";
 import { adminFetch } from "@/lib/adminApi";
 import { useAdminList } from "@/lib/useAdminList";
 import Modal from "@/components/admin/Modal";
-import ResourceForm, { type FieldSpec } from "@/components/admin/ResourceForm";
+import DevotionalForm from "@/components/admin/DevotionalForm";
 import ReorderableList from "@/components/admin/ReorderableList";
 
 type Devotional = {
@@ -15,19 +15,17 @@ type Devotional = {
   position: number;
 };
 
-const FIELDS: FieldSpec[] = [
-  { name: "title", label: "Title", required: true },
-  { name: "img_url", label: "Image URL", type: "url", required: true },
-  { name: "url", label: "Audio URL", type: "url", required: true },
-];
-
 export default function DevotionalsPage() {
   const { items, error: loadError, reload: load } =
     useAdminList<Devotional>("/admin/devotionals");
   const [editing, setEditing] = useState<Devotional | "new" | null>(null);
   const [deleting, setDeleting] = useState<Devotional | null>(null);
 
-  async function handleSave(values: Record<string, string | number>) {
+  async function handleSave(values: {
+    title: string;
+    img_url: string;
+    url: string;
+  }) {
     if (editing === "new") {
       // No position sent — new devotionals always append to the end
       // (Devotional#acts_as_list on the backend).
@@ -103,8 +101,7 @@ export default function DevotionalsPage() {
           title={editing === "new" ? "Add Devotional" : "Edit Devotional"}
           onClose={() => setEditing(null)}
         >
-          <ResourceForm
-            fields={FIELDS}
+          <DevotionalForm
             initialValues={editing === "new" ? undefined : editing}
             onSubmit={handleSave}
           />
