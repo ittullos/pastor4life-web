@@ -27,7 +27,6 @@ export default function Nav() {
             alt="Pastor4Life"
             width={44}
             height={44}
-            priority
             className="h-11 w-11 rounded-[22%]"
           />
         </Link>

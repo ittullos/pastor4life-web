@@ -49,7 +49,6 @@ export default function Home() {
             alt="Pastor4Life"
             width={1808}
             height={1430}
-            priority
             className="mx-auto h-auto w-72 drop-shadow-[0_4px_8px_rgba(0,0,0,0.6)] sm:w-96"
           />
           <p
