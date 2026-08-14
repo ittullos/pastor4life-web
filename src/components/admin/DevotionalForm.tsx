@@ -18,6 +18,8 @@ export default function DevotionalForm({
 }) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [imgUrl, setImgUrl] = useState(initialValues?.img_url ?? "");
+  const [audioUrl, setAudioUrl] = useState(initialValues?.url ?? "");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,8 +31,8 @@ export default function DevotionalForm({
     try {
       await onSubmit({
         title: String(data.get("title") ?? ""),
-        img_url: String(data.get("img_url") ?? ""),
-        url: String(data.get("url") ?? ""),
+        img_url: imgUrl,
+        url: audioUrl,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -62,13 +64,15 @@ export default function DevotionalForm({
         name="img_url"
         label="Cover Art"
         kind="image"
-        initialValue={initialValues?.img_url}
+        value={imgUrl}
+        onUploaded={setImgUrl}
       />
       <UploadField
         name="url"
         label="Audio File"
         kind="audio"
-        initialValue={initialValues?.url}
+        value={audioUrl}
+        onUploaded={setAudioUrl}
       />
 
       {error && <p className="text-sm text-brand-error">{error}</p>}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { fetchAuthSession } from "aws-amplify/auth";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -14,19 +14,15 @@ export default function UploadField({
   name,
   label,
   kind,
-  initialValue,
+  value,
+  onUploaded,
 }: {
   name: string;
   label: string;
   kind: "audio" | "image";
-  initialValue?: string;
+  value: string;
+  onUploaded: (url: string) => void;
 }) {
-  // Uncontrolled hidden input, updated imperatively via ref once the upload
-  // completes — keeps this compatible with the FormData-based submit that
-  // the rest of the devotional form already uses, without needing to lift
-  // the uploaded URL into parent state.
-  const hiddenInputRef = useRef<HTMLInputElement>(null);
-  const [currentUrl, setCurrentUrl] = useState(initialValue ?? "");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,8 +76,7 @@ export default function UploadField({
         throw new Error("Upload to storage failed. Please try again.");
       }
 
-      setCurrentUrl(public_url);
-      if (hiddenInputRef.current) hiddenInputRef.current.value = public_url;
+      onUploaded(public_url);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed.");
     } finally {
@@ -94,23 +89,18 @@ export default function UploadField({
   return (
     <div>
       <label className="block text-sm font-medium text-brand-navy">{label}</label>
-      <input
-        type="hidden"
-        name={name}
-        ref={hiddenInputRef}
-        defaultValue={initialValue ?? ""}
-      />
+      <input type="hidden" name={name} value={value} readOnly />
 
-      {currentUrl && (
+      {value && (
         <p className="mt-1 truncate text-sm text-brand-navy/60">
           Current:{" "}
           <a
-            href={currentUrl}
+            href={value}
             target="_blank"
             rel="noopener noreferrer"
             className="underline"
           >
-            {decodeURIComponent(currentUrl.split("/").pop() ?? currentUrl)}
+            {decodeURIComponent(value.split("/").pop() ?? value)}
           </a>
         </p>
       )}
