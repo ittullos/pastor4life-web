@@ -28,7 +28,7 @@ export default function Footer() {
           <Link href="/privacy" className="hover:underline">
             Privacy Policy
           </Link>
-          <Link href="/admin/login" className="hover:underline">
+          <Link href="/admin" className="hover:underline">
             Staff Login
           </Link>
         </nav>
