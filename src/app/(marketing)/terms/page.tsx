@@ -5,14 +5,18 @@ export const metadata: Metadata = {
   description: "Terms of Use for the Pastor4Life mobile application.",
 };
 
-// Content is verbatim from WEBSITE_PROJECT_CHECKLIST.md Section 8.3 — do not
-// rewrite the legal text. "Last Updated" intentionally left at the source
-// date; bump it to the real publish date at Phase 8 cutover, not before.
+// Content is verbatim from WEBSITE_PROJECT_CHECKLIST.md Section 8.3, EXCEPT
+// the "route"/"commitment journey" wording updated 2026-10-13 to match the
+// mileage redesign — the old manual start/stop route sessions and
+// selectable commitment tiers were removed from the app entirely (see the
+// matching Privacy Policy rewrite). Still TBMB's legal text; this is a
+// terminology correction to keep it accurate to the live app, not new
+// legal substance. "Last Updated" bumped to reflect this edit.
 export default function Terms() {
   return (
     <article className="prose prose-neutral mx-auto max-w-3xl px-6 py-16 prose-headings:text-brand-navy prose-a:text-brand-navy sm:py-20">
       <h1>Terms of Use</h1>
-      <p className="text-sm text-brand-navy/60">Last Updated: June 18, 2026</p>
+      <p className="text-sm text-brand-navy/60">Last Updated: October 13, 2026</p>
 
       <p>
         Welcome to Pastor4Life. These Terms of Use (&ldquo;Terms&rdquo;)
@@ -26,8 +30,8 @@ export default function Terms() {
       <h2>1. Use of the App</h2>
       <p>
         The Pastor4Life App is designed to support your personal spiritual
-        journey through features like prayer focus content, route
-        journaling, and devotional playback. You agree to use the App only
+        journey through features like prayer focus content, mileage
+        tracking, and devotional playback. You agree to use the App only
         for lawful purposes and in a way that does not infringe the rights
         of others or restrict their use and enjoyment of the App.
       </p>
@@ -40,9 +44,10 @@ export default function Terms() {
 
       <h2>3. User-Generated Content</h2>
       <p>
-        When you use the App, certain activity data — such as route duration
-        and estimated mileage — is stored securely in our database to
-        support your personalized experience across devices.
+        When you use the App, certain activity data — such as your daily
+        step and mileage totals imported from Apple Health or Health
+        Connect — is stored securely in our database to support your
+        personalized experience across devices.
       </p>
       <p>
         You retain ownership of the data associated with your account. We do
@@ -53,7 +58,7 @@ export default function Terms() {
 
       <h2>4. Data Storage and Security</h2>
       <p>
-        All user data, including route activities and account information,
+        All user data, including mileage activity and account information,
         is stored securely using Amazon Web Services (AWS) infrastructure.
         AWS offers industry-standard encryption and data protection
         practices. For more information on how we handle your personal
@@ -68,9 +73,9 @@ export default function Terms() {
       </p>
       <p>
         You may permanently delete your account and all associated data —
-        including route history and commitment progress — at any time
-        through the App&rsquo;s Settings screen. This action is immediate
-        and cannot be undone.
+        including your mileage history and annual goal progress — at any
+        time through the App&rsquo;s Settings screen. This action is
+        immediate and cannot be undone.
       </p>
 
       <h2>6. Intellectual Property</h2>
@@ -90,7 +95,7 @@ export default function Terms() {
       </p>
       <p>
         Pastor4Life is not responsible for any personal outcomes related to
-        prayer, route tracking, or spiritual progress recorded in the App.
+        prayer, mileage tracking, or spiritual progress recorded in the App.
       </p>
 
       <h2>8. Limitation of Liability</h2>

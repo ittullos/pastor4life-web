@@ -10,13 +10,18 @@ export const metadata: Metadata = {
 // before being treated as final — their presence here (and on production)
 // is not approval:
 //   - "Support Requests" — covers the /support form's data collection.
-//   - "Apple Health and Google Health Connect" — added 2026-10-13, covers
-//     the mileage-tracking feature's daily step/distance sync from
-//     HealthKit (iOS) and Health Connect (Android). One combined section
-//     for both platforms per the pastor4life (mobile) repo's
-//     ANDROID_ROLLOUT.md §5, rather than two separate policies.
-// "Last Updated" bumped to the date of the Health Connect addition above —
-// update it again whenever the text below next changes.
+//   - "Mileage Tracking" — rewritten 2026-10-13. The old "Route Tracking"
+//     section described the retired manual start/stop + selectable
+//     "commitment journey" system (CommitmentScreen/RouteManager, removed
+//     from the app entirely per the mileage redesign). It's replaced with
+//     one section describing the actual current behavior: the App imports
+//     daily step/distance totals from HealthKit (iOS) / Health Connect
+//     (Android) against a single annual goal — no manual entry, no route
+//     sessions, no selectable tiers. One combined section for both
+//     platforms per the pastor4life (mobile) repo's ANDROID_ROLLOUT.md §5,
+//     rather than two separate policies.
+// "Last Updated" bumped to the date of this rewrite — update it again
+// whenever the text below next changes.
 export default function Privacy() {
   return (
     <article className="prose prose-neutral mx-auto max-w-3xl px-6 py-16 prose-headings:text-brand-navy prose-a:text-brand-navy sm:py-20">
@@ -49,31 +54,16 @@ export default function Privacy() {
         users. No personal prayer list data is collected or stored.
       </p>
 
-      <h3>Route Tracking</h3>
+      <h3>Mileage Tracking</h3>
       <p>
-        If you use route tracking features, the App uses your device&rsquo;s
-        built-in motion sensor (pedometer) to count steps and estimate
-        walking distance during a prayer route. This data is processed on
-        your device using Apple&rsquo;s Core Motion framework. No GPS or
-        location data is collected or transmitted to our servers. Route
-        duration and estimated mileage are stored in your account to
-        support commitment tracking features. Your commitment progress —
-        including your selected commitment journey and miles logged toward
-        your goal — is also stored in your account.
-      </p>
-
-      <h3>Apple Health and Google Health Connect</h3>
-      <p>
-        If you grant permission, the App also reads your daily step count
-        and walking/running distance totals from Apple Health (iOS) or
-        Health Connect (Android) so your mileage stays up to date even when
-        you are not actively using the App&rsquo;s route tracking feature.
-        The App only reads this data — it never writes to Apple Health or
-        Health Connect, and no other health or fitness data types are
-        accessed. As with route tracking, no GPS or location data is
-        collected. Daily totals synced this way are stored in your account
-        to support commitment tracking, the same as data collected through
-        in-app route tracking described above.
+        If you grant permission, the App imports your daily step count and
+        walking/running distance totals from Apple Health (iOS) or Health
+        Connect (Android) to track your progress toward your annual mileage
+        goal, including a weekly pace target. The App only reads this
+        data — it never writes to Apple Health or Health Connect, and no
+        other health or fitness data types are accessed. No GPS or
+        location data is collected or transmitted to our servers. Your
+        daily totals and goal progress are stored in your account.
       </p>
 
       <h3>Support Requests</h3>
@@ -89,8 +79,8 @@ export default function Privacy() {
       <ul>
         <li>Provide and maintain the App&rsquo;s functionality</li>
         <li>
-          Allow access to personalized features (e.g., your route history
-          and commitment progress)
+          Allow access to personalized features (e.g., your mileage history
+          and annual goal progress)
         </li>
         <li>Improve user experience and app performance</li>
         <li>Communicate with you regarding updates or support</li>
@@ -101,7 +91,7 @@ export default function Privacy() {
       <p>
         We take your privacy seriously and implement security best
         practices. All personal data — including user account details and
-        route activity — is securely stored using Amazon Web Services (AWS)
+        mileage activity — is securely stored using Amazon Web Services (AWS)
         infrastructure. AWS provides industry-standard security and
         compliance protocols, including encryption in transit and at rest.
         For more information on how AWS handles data, please refer to the{" "}
@@ -130,9 +120,9 @@ export default function Privacy() {
         <li>Access or update your account details in the App</li>
         <li>
           Permanently delete your account and all associated data —
-          including route history and commitment progress — through the
-          App&rsquo;s Settings screen. This action is immediate and cannot
-          be undone.
+          including your mileage history and annual goal progress — through
+          the App&rsquo;s Settings screen. This action is immediate and
+          cannot be undone.
         </li>
         <li>
           Contact us with privacy-related questions at
