@@ -6,18 +6,22 @@ export const metadata: Metadata = {
 };
 
 // Content is verbatim from WEBSITE_PROJECT_CHECKLIST.md Section 8.4, EXCEPT
-// the "Support Requests" item under Section 1 — that paragraph is a drafted
-// addition (checklist Section 8.4 build note) covering the new /support form's
-// data collection, and still needs actual TBMB sign-off before this page is
-// published to production. Do not treat its presence here as approval —
-// Phase 7/8 deployment is gated separately regardless.
-// "Last Updated" intentionally left at the source date; bump it to the real
-// publish date at Phase 8 cutover, not before.
+// two drafted additions under Section 1 that still need actual TBMB sign-off
+// before being treated as final — their presence here (and on production)
+// is not approval:
+//   - "Support Requests" — covers the /support form's data collection.
+//   - "Apple Health and Google Health Connect" — added 2026-10-13, covers
+//     the mileage-tracking feature's daily step/distance sync from
+//     HealthKit (iOS) and Health Connect (Android). One combined section
+//     for both platforms per the pastor4life (mobile) repo's
+//     ANDROID_ROLLOUT.md §5, rather than two separate policies.
+// "Last Updated" bumped to the date of the Health Connect addition above —
+// update it again whenever the text below next changes.
 export default function Privacy() {
   return (
     <article className="prose prose-neutral mx-auto max-w-3xl px-6 py-16 prose-headings:text-brand-navy prose-a:text-brand-navy sm:py-20">
       <h1>Privacy Policy</h1>
-      <p className="text-sm text-brand-navy/60">Last Updated: June 18, 2026</p>
+      <p className="text-sm text-brand-navy/60">Last Updated: October 13, 2026</p>
 
       <p>
         Pastor4Life (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;)
@@ -56,6 +60,20 @@ export default function Privacy() {
         support commitment tracking features. Your commitment progress —
         including your selected commitment journey and miles logged toward
         your goal — is also stored in your account.
+      </p>
+
+      <h3>Apple Health and Google Health Connect</h3>
+      <p>
+        If you grant permission, the App also reads your daily step count
+        and walking/running distance totals from Apple Health (iOS) or
+        Health Connect (Android) so your mileage stays up to date even when
+        you are not actively using the App&rsquo;s route tracking feature.
+        The App only reads this data — it never writes to Apple Health or
+        Health Connect, and no other health or fitness data types are
+        accessed. As with route tracking, no GPS or location data is
+        collected. Daily totals synced this way are stored in your account
+        to support commitment tracking, the same as data collected through
+        in-app route tracking described above.
       </p>
 
       <h3>Support Requests</h3>
