@@ -5,7 +5,6 @@ import { useAdminList } from "@/lib/useAdminList";
 
 export default function AdminDashboard() {
   const devotionals = useAdminList<unknown>("/admin/devotionals");
-  const journeys = useAdminList<unknown>("/admin/journeys");
   const prayerItems = useAdminList<unknown>("/admin/prayer-items");
   const verses = useAdminList<unknown>("/admin/verses");
   const openTickets = useAdminList<unknown>(
@@ -14,7 +13,6 @@ export default function AdminDashboard() {
 
   const cards = [
     { href: "/admin/devotionals", label: "Devotionals", count: devotionals.items?.length },
-    { href: "/admin/journeys", label: "Journeys", count: journeys.items?.length },
     { href: "/admin/prayer-items", label: "Prayer Items", count: prayerItems.items?.length },
     { href: "/admin/verses", label: "Verses", count: verses.items?.length },
     {
