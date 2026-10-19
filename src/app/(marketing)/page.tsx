@@ -11,12 +11,12 @@ const CARDS = [
   {
     icon: "👟",
     title: "Prayer Walks",
-    body: "Start a prayer walk and track your distance using your device's motion sensor as you go. If automatic tracking isn't available on your device, you can enter your mileage manually — so every walk still counts toward your commitment. Walk your community with purpose and intention.",
+    body: "Walk and pray with purpose. The app imports your daily step count and walking distance from Apple Health so your mileage stays up to date automatically — no need to start or stop a session.",
   },
   {
     icon: "🎯",
-    title: "Commitment Tracking",
-    body: "Set a walking commitment and track your progress over time. Start small, build momentum, and celebrate those victories along the way — the Stats screen shows your miles logged and time invested in prayer walking.",
+    title: "Mileage Tracking",
+    body: "Work toward a shared annual mileage goal, with a weekly pace target and a Stats screen that shows your progress across the week, month, and year.",
   },
   {
     icon: "🙏",
