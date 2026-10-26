@@ -10,14 +10,29 @@ import { runWithAmplifyServerContext } from "@/lib/amplify-server-utils";
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
 
+  // TEMPORARY diagnostic logging -- the login page keeps bouncing back here
+  // even after confirming client-side the session is valid and has the
+  // Admins claim, which points at a persistent client/server disagreement
+  // rather than a transient cookie-write race. Logging exactly what this
+  // server-side check sees (or what error it's silently swallowing) until
+  // the actual cause is identified; remove once resolved.
   const groups = await runWithAmplifyServerContext({
     nextServerContext: { request, response },
     operation: async (contextSpec) => {
       try {
         const session = await fetchAuthSession(contextSpec);
         const claim = session.tokens?.idToken?.payload["cognito:groups"];
+        console.log(
+          "[admin middleware]",
+          request.nextUrl.pathname,
+          "hasTokens:", !!session.tokens,
+          "idToken present:", !!session.tokens?.idToken,
+          "groupsClaim:", JSON.stringify(claim),
+          "cookieNames:", request.cookies.getAll().map((c) => c.name).join(","),
+        );
         return Array.isArray(claim) ? (claim as string[]) : [];
-      } catch {
+      } catch (err) {
+        console.error("[admin middleware] fetchAuthSession threw:", err);
         return [];
       }
     },
