@@ -19,24 +19,39 @@ export default function AdminLogin() {
 
   useEffect(() => {
     let cancelled = false;
+    // Loop guard: if the client-side session check below disagrees with
+    // middleware.ts's server-side check -- client sees a valid Admins
+    // session, server doesn't -- redirecting to /admin just bounces
+    // straight back here, which would otherwise retrigger this same
+    // effect and loop forever ("just refreshes, nothing works"). This
+    // flag means we only ever attempt the automatic redirect once per
+    // browser tab between full page loads of this form; if we're back
+    // here with the flag already set, something is actually wrong
+    // (not just normal navigation) and we fall through to the form
+    // instead of trying again.
+    const alreadyAttempted = sessionStorage.getItem("admin-login-auto-redirect-attempted");
 
     (async () => {
-      try {
-        const session = await fetchAuthSession();
-        const groups = session.tokens?.idToken?.payload["cognito:groups"];
-        const isAdmin = Array.isArray(groups) && groups.includes("Admins");
+      if (!alreadyAttempted) {
+        try {
+          const session = await fetchAuthSession();
+          const groups = session.tokens?.idToken?.payload["cognito:groups"];
+          const isAdmin = Array.isArray(groups) && groups.includes("Admins");
 
-        if (isAdmin) {
-          // Full navigation, not client-side routing, so middleware.ts
-          // re-runs and the normal /admin auth gate takes it from here.
-          window.location.href = "/admin";
-          return;
+          if (isAdmin) {
+            sessionStorage.setItem("admin-login-auto-redirect-attempted", "1");
+            // Full navigation, not client-side routing, so middleware.ts
+            // re-runs and the normal /admin auth gate takes it from here.
+            window.location.href = "/admin";
+            return;
+          }
+        } catch {
+          // No valid session (or the group check failed) -- fall through
+          // to showing the login form, same as before.
         }
-      } catch {
-        // No valid session (or the group check failed) -- fall through
-        // to showing the login form, same as before.
       }
 
+      sessionStorage.removeItem("admin-login-auto-redirect-attempted");
       if (!cancelled) setCheckingSession(false);
     })();
 
