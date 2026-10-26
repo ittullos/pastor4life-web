@@ -3,6 +3,34 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { fetchAuthSession, signIn } from "aws-amplify/auth";
 
+const SESSION_CONFIRM_ATTEMPTS = 5;
+const SESSION_CONFIRM_DELAY_MS = 150;
+
+// signIn() resolving isSignedIn:true doesn't guarantee the session cookies
+// it just wrote are flushed and visible to the very next request yet --
+// confirmed via DevTools: the cookies are valid and present, but a
+// window.location.href fired immediately after signIn() can still beat
+// the write, so middleware.ts's server-side check (reading request
+// cookies) sees nothing and bounces back to /admin/login even though the
+// session is fine moments later. Briefly re-checking the client-side
+// session before navigating closes that gap -- worst case adds well under
+// a second; if it's still not there after this many attempts, it's a real
+// auth problem and navigating anyway just lets middleware's normal
+// redirect-to-login handle it, same as before this existed.
+async function waitForAdminSession(): Promise<boolean> {
+  for (let attempt = 0; attempt < SESSION_CONFIRM_ATTEMPTS; attempt++) {
+    try {
+      const session = await fetchAuthSession();
+      const groups = session.tokens?.idToken?.payload["cognito:groups"];
+      if (Array.isArray(groups) && groups.includes("Admins")) return true;
+    } catch {
+      // Not ready yet -- fall through to the delay and retry.
+    }
+    await new Promise((resolve) => setTimeout(resolve, SESSION_CONFIRM_DELAY_MS));
+  }
+  return false;
+}
+
 export default function AdminLogin() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -74,6 +102,10 @@ export default function AdminLogin() {
       });
 
       if (result.isSignedIn) {
+        // See waitForAdminSession's comment -- give the session cookies a
+        // moment to actually become readable before navigating, instead
+        // of racing them.
+        await waitForAdminSession();
         // Full navigation (not client-side routing) so middleware re-runs
         // against the cookies signIn() just wrote.
         window.location.href = "/admin";
