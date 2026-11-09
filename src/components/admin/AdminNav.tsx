@@ -8,6 +8,7 @@ import SignOutButton from "./SignOutButton";
 
 const NAV_LINKS = [
   { href: "/admin", label: "Dashboard" },
+  { href: "/admin/reports", label: "Reports" },
   { href: "/admin/devotionals", label: "Devotionals" },
   { href: "/admin/prayer-items", label: "Prayer Items" },
   { href: "/admin/verses", label: "Verses" },

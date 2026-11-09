@@ -29,7 +29,22 @@ export default function AdminDashboard() {
         Manage the content that powers the Pastor4Life app.
       </p>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <Link
+        href="/admin/reports"
+        className="mt-6 flex items-center justify-between rounded-xl border border-black/10 bg-brand-navy p-6 text-white shadow-sm transition-colors hover:bg-brand-navy/90"
+      >
+        <div>
+          <p className="text-lg font-semibold">Reports</p>
+          <p className="mt-1 text-sm text-white/70">
+            Active users, new signups, mileage, and platform adoption over time.
+          </p>
+        </div>
+        <span aria-hidden className="text-2xl">
+          →
+        </span>
+      </Link>
+
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card) => (
           <Link
             key={card.href}
