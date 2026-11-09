@@ -1,10 +1,33 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { fetchAuthSession, signIn } from "aws-amplify/auth";
+import { fetchAuthSession, signIn, signOut } from "aws-amplify/auth";
 
 const SESSION_CONFIRM_ATTEMPTS = 5;
 const SESSION_CONFIRM_DELAY_MS = 150;
+
+type SessionCheck = { isAdmin: boolean; email: string | null };
+
+// Reads the current session (if any) and reports both whether it's an
+// Admins-group session and, for the "signed in but not authorized" message,
+// which account that actually was -- falls back to the Cognito username if
+// the email claim isn't present for some reason.
+async function checkSession(): Promise<SessionCheck | null> {
+  try {
+    const session = await fetchAuthSession();
+    if (!session.tokens) return null;
+    const payload = session.tokens.idToken?.payload;
+    const groups = payload?.["cognito:groups"];
+    const email =
+      (typeof payload?.email === "string" ? payload.email : null) ??
+      (typeof payload?.["cognito:username"] === "string"
+        ? (payload["cognito:username"] as string)
+        : null);
+    return { isAdmin: Array.isArray(groups) && groups.includes("Admins"), email };
+  } catch {
+    return null;
+  }
+}
 
 // signIn() resolving isSignedIn:true doesn't guarantee the session cookies
 // it just wrote are flushed and visible to the very next request yet --
@@ -14,21 +37,17 @@ const SESSION_CONFIRM_DELAY_MS = 150;
 // cookies) sees nothing and bounces back to /admin/login even though the
 // session is fine moments later. Briefly re-checking the client-side
 // session before navigating closes that gap -- worst case adds well under
-// a second; if it's still not there after this many attempts, it's a real
-// auth problem and navigating anyway just lets middleware's normal
-// redirect-to-login handle it, same as before this existed.
-async function waitForAdminSession(): Promise<boolean> {
+// a second. Also doubles as the real "is this account actually an admin"
+// check: a correctly-authenticated non-admin account will consistently
+// report isAdmin: false across every attempt, not just the first.
+async function waitForAdminSession(): Promise<SessionCheck | null> {
+  let last: SessionCheck | null = null;
   for (let attempt = 0; attempt < SESSION_CONFIRM_ATTEMPTS; attempt++) {
-    try {
-      const session = await fetchAuthSession();
-      const groups = session.tokens?.idToken?.payload["cognito:groups"];
-      if (Array.isArray(groups) && groups.includes("Admins")) return true;
-    } catch {
-      // Not ready yet -- fall through to the delay and retry.
-    }
+    last = await checkSession();
+    if (last?.isAdmin) return last;
     await new Promise((resolve) => setTimeout(resolve, SESSION_CONFIRM_DELAY_MS));
   }
-  return false;
+  return last;
 }
 
 export default function AdminLogin() {
@@ -44,6 +63,11 @@ export default function AdminLogin() {
   // below from ever hitting Amplify's confusing
   // UserAlreadyAuthenticatedException in the first place.
   const [checkingSession, setCheckingSession] = useState(true);
+  // Set when there's a genuinely valid, signed-in session that simply
+  // isn't in the Admins group -- shown instead of the form so that case
+  // doesn't look like the exact same silent "nothing happens" symptom as
+  // the session-race bug this page used to have.
+  const [notAuthorizedEmail, setNotAuthorizedEmail] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -61,21 +85,23 @@ export default function AdminLogin() {
 
     (async () => {
       if (!alreadyAttempted) {
-        try {
-          const session = await fetchAuthSession();
-          const groups = session.tokens?.idToken?.payload["cognito:groups"];
-          const isAdmin = Array.isArray(groups) && groups.includes("Admins");
+        const check = await checkSession();
 
-          if (isAdmin) {
-            sessionStorage.setItem("admin-login-auto-redirect-attempted", "1");
-            // Full navigation, not client-side routing, so middleware.ts
-            // re-runs and the normal /admin auth gate takes it from here.
-            window.location.href = "/admin";
-            return;
-          }
-        } catch {
-          // No valid session (or the group check failed) -- fall through
-          // to showing the login form, same as before.
+        if (check?.isAdmin) {
+          sessionStorage.setItem("admin-login-auto-redirect-attempted", "1");
+          // Full navigation, not client-side routing, so middleware.ts
+          // re-runs and the normal /admin auth gate takes it from here.
+          window.location.href = "/admin";
+          return;
+        }
+
+        if (check && !cancelled) {
+          // Signed in, but genuinely not an admin -- not a session
+          // problem, so don't keep retrying or show the login form.
+          setNotAuthorizedEmail(check.email);
+          sessionStorage.removeItem("admin-login-auto-redirect-attempted");
+          setCheckingSession(false);
+          return;
         }
       }
 
@@ -87,6 +113,12 @@ export default function AdminLogin() {
       cancelled = true;
     };
   }, []);
+
+  async function handleSignOut() {
+    await signOut();
+    setNotAuthorizedEmail(null);
+    setError(null);
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -104,8 +136,18 @@ export default function AdminLogin() {
       if (result.isSignedIn) {
         // See waitForAdminSession's comment -- give the session cookies a
         // moment to actually become readable before navigating, instead
-        // of racing them.
-        await waitForAdminSession();
+        // of racing them. A consistent (not just first-try) isAdmin:false
+        // across every attempt means this account really isn't an admin,
+        // not a timing issue -- show that instead of bouncing off
+        // middleware with no explanation.
+        const check = await waitForAdminSession();
+
+        if (!check?.isAdmin) {
+          setNotAuthorizedEmail(check?.email ?? String(data.get("email")));
+          setLoading(false);
+          return;
+        }
+
         // Full navigation (not client-side routing) so middleware re-runs
         // against the cookies signIn() just wrote.
         window.location.href = "/admin";
@@ -117,11 +159,16 @@ export default function AdminLogin() {
       );
     } catch (err) {
       // A harmless race with the already-authenticated check above (the
-      // session became valid between mount and submit) -- treat it the
-      // same way: get them into the portal instead of surfacing Amplify's
-      // raw "There is already a signed in user." message.
+      // session became valid between mount and submit) -- handle it the
+      // same way as a normal sign-in instead of surfacing Amplify's raw
+      // "There is already a signed in user." message.
       if (err instanceof Error && err.name === "UserAlreadyAuthenticatedException") {
-        window.location.href = "/admin";
+        const check = await checkSession();
+        if (check?.isAdmin) {
+          window.location.href = "/admin";
+        } else {
+          setNotAuthorizedEmail(check?.email ?? String(data.get("email")));
+        }
         return;
       }
 
@@ -135,6 +182,32 @@ export default function AdminLogin() {
     return (
       <main className="flex flex-1 items-center justify-center px-6 py-16">
         <p className="text-brand-navy/60">Checking your session…</p>
+      </main>
+    );
+  }
+
+  if (notAuthorizedEmail) {
+    return (
+      <main className="flex flex-1 items-center justify-center px-6 py-16">
+        <div className="w-full max-w-sm rounded-xl border border-black/10 bg-white p-6 text-center shadow-sm">
+          <h1 className="text-xl font-bold text-brand-navy">Access Not Set Up Yet</h1>
+          <p className="mt-3 text-sm text-brand-navy/80">
+            You&rsquo;re signed in as <strong>{notAuthorizedEmail}</strong>,
+            but this account doesn&rsquo;t have admin access to the
+            Pastor4Life portal yet.
+          </p>
+          <p className="mt-3 text-sm text-brand-navy/80">
+            Ask your site administrator to add this account to the Admins
+            group, then sign in again.
+          </p>
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="mt-6 rounded-full bg-brand-navy px-6 py-3 font-medium text-white transition-colors hover:bg-brand-navy/90"
+          >
+            Sign Out
+          </button>
+        </div>
       </main>
     );
   }
