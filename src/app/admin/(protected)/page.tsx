@@ -1,26 +1,45 @@
 "use client";
 
-import Link from "next/link";
-import { useAdminList } from "@/lib/useAdminList";
+import { Suspense } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import ReportsTab from "@/components/admin/dashboard/ReportsTab";
+import ContentTab from "@/components/admin/dashboard/ContentTab";
+import SupportTicketsTab from "@/components/admin/dashboard/SupportTicketsTab";
 
+type TabKey = "reports" | "content" | "support-tickets";
+
+const TABS: { key: TabKey; label: string }[] = [
+  { key: "reports", label: "Reports" },
+  { key: "content", label: "Content" },
+  { key: "support-tickets", label: "Support Tickets" },
+];
+
+function isTabKey(value: string | null): value is TabKey {
+  return TABS.some((t) => t.key === value);
+}
+
+// useSearchParams requires a Suspense boundary in the App Router.
 export default function AdminDashboard() {
-  const devotionals = useAdminList<unknown>("/admin/devotionals");
-  const prayerItems = useAdminList<unknown>("/admin/prayer-items");
-  const verses = useAdminList<unknown>("/admin/verses");
-  const openTickets = useAdminList<unknown>(
-    "/admin/support-tickets?status=open",
+  return (
+    <Suspense fallback={null}>
+      <DashboardTabs />
+    </Suspense>
   );
+}
 
-  const cards = [
-    { href: "/admin/devotionals", label: "Devotionals", count: devotionals.items?.length },
-    { href: "/admin/prayer-items", label: "Prayer Items", count: prayerItems.items?.length },
-    { href: "/admin/verses", label: "Verses", count: verses.items?.length },
-    {
-      href: "/admin/support-tickets?status=open",
-      label: "Open Support Tickets",
-      count: openTickets.items?.length,
-    },
-  ];
+function DashboardTabs() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const requested = searchParams.get("tab");
+  const activeTab: TabKey = isTabKey(requested) ? requested : "reports";
+
+  function selectTab(tab: TabKey) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", tab);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }
 
   return (
     <div>
@@ -29,36 +48,28 @@ export default function AdminDashboard() {
         Manage the content that powers the Pastor4Life app.
       </p>
 
-      <Link
-        href="/admin/reports"
-        className="mt-6 flex items-center justify-between rounded-xl border border-black/10 bg-brand-navy p-6 text-white shadow-sm transition-colors hover:bg-brand-navy/90"
-      >
-        <div>
-          <p className="text-lg font-semibold">Reports</p>
-          <p className="mt-1 text-sm text-white/70">
-            Active users, new signups, mileage, and platform adoption over time.
-          </p>
-        </div>
-        <span aria-hidden className="text-2xl">
-          →
-        </span>
-      </Link>
-
-      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {cards.map((card) => (
-          <Link
-            key={card.href}
-            href={card.href}
-            className="rounded-xl border border-black/10 bg-white p-6 shadow-sm transition-colors hover:border-brand-navy/30"
+      <div className="mt-6 flex gap-1 border-b border-black/10">
+        {TABS.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => selectTab(tab.key)}
+            aria-current={activeTab === tab.key ? "page" : undefined}
+            className={`-mb-px border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors ${
+              activeTab === tab.key
+                ? "border-brand-navy text-brand-navy"
+                : "border-transparent text-brand-navy/50 hover:text-brand-navy"
+            }`}
           >
-            <p className="text-3xl font-bold text-brand-navy">
-              {card.count ?? "…"}
-            </p>
-            <p className="mt-1 text-sm font-medium text-brand-navy/70">
-              {card.label}
-            </p>
-          </Link>
+            {tab.label}
+          </button>
         ))}
+      </div>
+
+      <div className="mt-6">
+        {activeTab === "reports" && <ReportsTab />}
+        {activeTab === "content" && <ContentTab />}
+        {activeTab === "support-tickets" && <SupportTicketsTab />}
       </div>
     </div>
   );

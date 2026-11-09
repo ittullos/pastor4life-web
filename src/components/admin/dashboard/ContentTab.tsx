@@ -1,0 +1,34 @@
+import Link from "next/link";
+import { useAdminList } from "@/lib/useAdminList";
+
+export default function ContentTab() {
+  const devotionals = useAdminList<unknown>("/admin/devotionals");
+  const prayerItems = useAdminList<unknown>("/admin/prayer-items");
+  const verses = useAdminList<unknown>("/admin/verses");
+
+  const cards = [
+    { href: "/admin/devotionals", label: "Devotionals", count: devotionals.items?.length },
+    { href: "/admin/prayer-items", label: "Prayer Items", count: prayerItems.items?.length },
+    { href: "/admin/verses", label: "Verses", count: verses.items?.length },
+  ];
+
+  return (
+    <div>
+      <p className="text-brand-navy/70">
+        The three content types that power the app — pick one to manage it.
+      </p>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {cards.map((card) => (
+          <Link
+            key={card.href}
+            href={card.href}
+            className="rounded-xl border border-black/10 bg-white p-6 shadow-sm transition-colors hover:border-brand-navy/30"
+          >
+            <p className="text-3xl font-bold text-brand-navy">{card.count ?? "…"}</p>
+            <p className="mt-1 text-sm font-medium text-brand-navy/70">{card.label}</p>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
