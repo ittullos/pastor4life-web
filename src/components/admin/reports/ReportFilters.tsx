@@ -40,7 +40,8 @@ export default function ReportFilters({
   exportDisabled,
 }: ReportFiltersProps) {
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-black/10 bg-white p-4 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-xl border border-black/10 bg-white p-4 shadow-sm">
+      {/* Presets — free to wrap among themselves on narrow widths */}
       <div className="flex flex-wrap items-center gap-2">
         {PRESETS.map((preset) => {
           const { startDate: pStart, endDate: pEnd } = presetRange(preset.key);
@@ -60,9 +61,14 @@ export default function ReportFilters({
             </button>
           );
         })}
+      </div>
 
-        <div className="mx-1 h-6 w-px bg-black/10" />
+      <div className="hidden h-6 w-px bg-black/10 sm:block" />
 
+      {/* Start/end date pair — kept as one non-wrapping unit so it moves to
+          its own line as a whole on narrow widths, rather than splitting
+          apart mid-pair. */}
+      <div className="flex flex-nowrap items-center gap-2">
         <label className="flex items-center gap-1.5 text-sm text-brand-navy/70">
           <span className="sr-only">Start date</span>
           <input
@@ -70,10 +76,10 @@ export default function ReportFilters({
             value={startDate}
             max={endDate}
             onChange={(e) => onRangeChange(e.target.value, endDate)}
-            className="rounded-lg border border-black/10 px-2 py-1.5 text-sm text-brand-navy focus:border-brand-navy focus:outline-none"
+            className="w-[150px] rounded-lg border border-black/10 px-2 py-1.5 text-sm text-brand-navy focus:border-brand-navy focus:outline-none"
           />
         </label>
-        <span className="text-brand-navy/40">–</span>
+        <span className="shrink-0 text-brand-navy/40">–</span>
         <label className="flex items-center gap-1.5 text-sm text-brand-navy/70">
           <span className="sr-only">End date</span>
           <input
@@ -82,12 +88,12 @@ export default function ReportFilters({
             min={startDate}
             max={new Date().toISOString().slice(0, 10)}
             onChange={(e) => onRangeChange(startDate, e.target.value)}
-            className="rounded-lg border border-black/10 px-2 py-1.5 text-sm text-brand-navy focus:border-brand-navy focus:outline-none"
+            className="w-[150px] rounded-lg border border-black/10 px-2 py-1.5 text-sm text-brand-navy focus:border-brand-navy focus:outline-none"
           />
         </label>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 lg:ml-auto">
         <div className="flex rounded-full border border-black/10 p-0.5">
           {GRANULARITIES.map((g) => (
             <button
