@@ -97,7 +97,10 @@ export default function AdminLogin() {
 
         if (check && !cancelled) {
           // Signed in, but genuinely not an admin -- not a session
-          // problem, so don't keep retrying or show the login form.
+          // problem, so don't keep retrying or show the login form. Sign
+          // them back out immediately rather than leaving a valid-but-
+          // unauthorized session sitting around for a manual click.
+          await signOut();
           setNotAuthorizedEmail(check.email);
           sessionStorage.removeItem("admin-login-auto-redirect-attempted");
           setCheckingSession(false);
@@ -114,8 +117,9 @@ export default function AdminLogin() {
     };
   }, []);
 
-  async function handleSignOut() {
-    await signOut();
+  function handleReturnToLogin() {
+    // Already signed out at the point this screen was shown -- just go
+    // back to the form.
     setNotAuthorizedEmail(null);
     setError(null);
   }
@@ -143,6 +147,7 @@ export default function AdminLogin() {
         const check = await waitForAdminSession();
 
         if (!check?.isAdmin) {
+          await signOut();
           setNotAuthorizedEmail(check?.email ?? String(data.get("email")));
           setLoading(false);
           return;
@@ -167,6 +172,7 @@ export default function AdminLogin() {
         if (check?.isAdmin) {
           window.location.href = "/admin";
         } else {
+          await signOut();
           setNotAuthorizedEmail(check?.email ?? String(data.get("email")));
         }
         return;
@@ -192,9 +198,9 @@ export default function AdminLogin() {
         <div className="w-full max-w-sm rounded-xl border border-black/10 bg-white p-6 text-center shadow-sm">
           <h1 className="text-xl font-bold text-brand-navy">Access Not Set Up Yet</h1>
           <p className="mt-3 text-sm text-brand-navy/80">
-            You&rsquo;re signed in as <strong>{notAuthorizedEmail}</strong>,
-            but this account doesn&rsquo;t have admin access to the
-            Pastor4Life portal yet.
+            You signed in as <strong>{notAuthorizedEmail}</strong>, but that
+            account doesn&rsquo;t have admin access to the Pastor4Life
+            portal yet.
           </p>
           <p className="mt-3 text-sm text-brand-navy/80">
             Ask your site administrator to add this account to the Admins
@@ -202,10 +208,10 @@ export default function AdminLogin() {
           </p>
           <button
             type="button"
-            onClick={handleSignOut}
+            onClick={handleReturnToLogin}
             className="mt-6 rounded-full bg-brand-navy px-6 py-3 font-medium text-white transition-colors hover:bg-brand-navy/90"
           >
-            Sign Out
+            Return to Login
           </button>
         </div>
       </main>
