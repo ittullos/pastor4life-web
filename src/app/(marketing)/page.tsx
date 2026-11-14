@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
+import { APP_STORE_URL } from "@/lib/storeLinks";
 
 export const metadata: Metadata = {
   title: "Pastor4Life",
@@ -57,6 +59,20 @@ export default function Home() {
             A simple, friendly app designed just for pastors like you who want
             to stay healthy in body, mind, and spirit.
           </p>
+          <div className="mt-8 flex flex-col items-center gap-3">
+            <a
+              href={APP_STORE_URL}
+              className="rounded-lg bg-black px-6 py-3 font-semibold text-white shadow-lg ring-1 ring-white/20 hover:bg-black/85"
+            >
+              Download on the App Store
+            </a>
+            <Link
+              href="/beta"
+              className="text-sm font-semibold text-white underline underline-offset-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.7)] hover:text-brand-lime"
+            >
+              On Android? Join the beta
+            </Link>
+          </div>
         </div>
       </section>
 
