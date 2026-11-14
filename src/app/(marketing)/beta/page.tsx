@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import QRCode from "qrcode";
-import { APP_STORE_URL } from "@/lib/storeLinks";
+import AppStoreButton from "@/components/AppStoreButton";
 
 export const metadata: Metadata = {
   title: "Join the Beta — Pastor4Life",
@@ -64,12 +64,9 @@ export default async function Beta() {
             <p className="mt-1 text-brand-navy/80">
               No beta needed — Pastor4Life is already on the App Store.
             </p>
-            <a
-              href={APP_STORE_URL}
-              className="mt-3 inline-block rounded-lg bg-black px-5 py-3 font-semibold text-white hover:bg-black/85"
-            >
-              Download on the App Store →
-            </a>
+            <div className="mt-3">
+              <AppStoreButton variant="dark" />
+            </div>
           </div>
 
           <ol className="mt-10 space-y-6">
